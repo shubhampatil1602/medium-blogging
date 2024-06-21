@@ -30,7 +30,7 @@ userRouter.post('/signup', async (c) => {
   try {
     const user = await prisma.user.create({
       data: {
-        email: body.username,
+        username: body.username,
         password: body.password,
         name: body.name,
       },
@@ -39,13 +39,14 @@ userRouter.post('/signup', async (c) => {
     const token = await sign(
       {
         id: user.id,
+        exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
       },
       c.env.JWT_SECRET
     );
-    return c.json({ token });
+    return c.json(token);
   } catch (error) {
     c.status(403);
-    return c.json({ error: 'Error Signing in.' });
+    return c.json({ err: 'Error Signing in.', error });
   }
 });
 
@@ -63,7 +64,7 @@ userRouter.post('/signin', async (c) => {
   }
   const user = await prisma.user.findUnique({
     where: {
-      email: body.username,
+      username: body.username,
       password: body.password,
     },
   });
@@ -73,6 +74,13 @@ userRouter.post('/signin', async (c) => {
     return c.json({ error: 'user not found.' });
   }
 
-  const token = await sign({ id: user.id }, c.env.JWT_SECRET);
-  return c.json({ token });
+  const token = await sign(
+    { id: user.id, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 },
+    c.env.JWT_SECRET
+  );
+  return c.json(token);
+});
+
+userRouter.get('/logout', async (c) => {
+  return c.json({ message: 'Logout Successfull.' });
 });
