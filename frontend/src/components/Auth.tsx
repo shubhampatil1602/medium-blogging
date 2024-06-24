@@ -1,6 +1,8 @@
 import { ChangeEvent, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SignupInput } from '@shubhamspatilnbr/blogging-website-common';
+import axios from 'axios';
+import { BACKEND_URL } from '../config';
 
 export const Auth = ({ type }: { type: 'signup' | 'signin' }) => {
   const [postInputs, setPostInputs] = useState<SignupInput>({
@@ -8,6 +10,24 @@ export const Auth = ({ type }: { type: 'signup' | 'signin' }) => {
     username: '',
     password: '',
   });
+  const navigate = useNavigate();
+
+  async function sendrequest() {
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/api/v1/user/${
+          type === 'signup' ? 'signup' : 'signin '
+        }`,
+        postInputs
+      );
+      const jwt = response.data;
+      localStorage.setItem('token', jwt);
+      navigate('/blogs');
+    } catch (error) {
+      alert(error);
+    }
+  }
+
   return (
     <div className='h-screen flex justify-center flex-col mx-6'>
       <div className='flex justify-center items-center flex-col min-w-80 mb-6'>
@@ -18,27 +38,26 @@ export const Auth = ({ type }: { type: 'signup' | 'signin' }) => {
           {type === 'signin'
             ? "Don't have an account?"
             : 'Already have an account?'}{' '}
-          <Link
-            to={type === 'signin' ? '/signup' : '/signin'}
-            className='underline'
-          >
+          <Link to={type === 'signin' ? '/' : '/signin'} className='underline'>
             {type === 'signin' ? 'Signup' : 'Signin'}
           </Link>
         </span>
       </div>
       <div className=''>
         <form className='max-w-96 flex justify-center items-center flex-col m-auto gap-4'>
-          <LabeledInput
-            label='Username'
-            type='text'
-            placeholder='Enter your username'
-            onchange={(e) =>
-              setPostInputs((c) => ({
-                ...c,
-                name: e.target.value,
-              }))
-            }
-          />
+          {type === 'signup' && (
+            <LabeledInput
+              label='Username'
+              type='text'
+              placeholder='Enter your username'
+              onchange={(e) =>
+                setPostInputs((c) => ({
+                  ...c,
+                  name: e.target.value,
+                }))
+              }
+            />
+          )}
           <LabeledInput
             label='Email'
             type='email'
@@ -62,6 +81,7 @@ export const Auth = ({ type }: { type: 'signup' | 'signin' }) => {
             }
           />
           <button
+            onClick={sendrequest}
             type='button'
             className='text-white bg-black w-full hover:opacity-80 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 focus:outline-none'
           >
