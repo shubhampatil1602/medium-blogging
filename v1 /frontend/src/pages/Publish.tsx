@@ -8,7 +8,7 @@ export default function Publish() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const navigate = useNavigate();
-  async function publishPost(e) {
+  async function publishPost(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
       const response = await axios.post(
