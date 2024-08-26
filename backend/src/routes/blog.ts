@@ -34,6 +34,7 @@ blogRouter.post('/', authMiddleware, async (c) => {
         content: body.content,
         authorId: c.get('userId'),
         published: true,
+        publishedOn: new Date(),
       },
     });
     return c.json({ id: blog.id });
@@ -98,15 +99,42 @@ blogRouter.get('/my-blogs', authMiddleware, async (c) => {
   }
 });
 
-// Get all the blog posts.
+// Get all the blog posts with pagination.
 blogRouter.get('/bulk', async (c) => {
   const prisma = new PrismaClient({
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
+  // Safely retrieve and parse query parameters with default values
+  const limitParam = c.req.query('limit');
+  const pageParam = c.req.query('page');
+
+  const limit = limitParam ? parseInt(limitParam, 10) : 10; // Default to 10 items per page
+  const page = pageParam ? parseInt(pageParam, 10) : 1; // Default to page 1
+
+  // Calculate the number of records to skip
+  const skip = (page - 1) * limit;
+
   try {
-    const blogs = await prisma.blog.findMany();
-    return c.json(blogs);
+    // Fetch the paginated blogs
+    const blogs = await prisma.blog.findMany({
+      skip: skip, // Skip the calculated number of records
+      take: limit, // Limit the number of records returned
+    });
+
+    // Optionally, fetch the total count of blogs for additional pagination info
+    const totalBlogs = await prisma.blog.count();
+
+    // Return the paginated blogs and additional pagination info
+    return c.json({
+      blogs,
+      pagination: {
+        total: totalBlogs,
+        page: page,
+        limit: limit,
+        totalPages: Math.ceil(totalBlogs / limit),
+      },
+    });
   } catch (error) {
     c.status(500);
     return c.json({ msg: 'Failed to retrieve blogs.' });
@@ -136,3 +164,17 @@ blogRouter.get('/:id', async (c) => {
     return c.json({ msg: 'Failed to retrieve blog.' });
   }
 });
+
+// Get all the blog posts.
+// blogRouter.get('/bulk', async (c) => {
+//   const prisma = new PrismaClient({
+//     datasourceUrl: c.env?.DATABASE_URL,
+//   }).$extends(withAccelerate());
+//   try {
+//     const blogs = await prisma.blog.findMany();
+//     return c.json(blogs);
+//   } catch (error) {
+//     c.status(500);
+//     return c.json({ msg: 'Failed to retrieve blogs.' });
+//   }
+// });

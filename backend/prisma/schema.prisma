@@ -16,10 +16,11 @@ model User {
 }
 
 model Blog {
-  id        String  @id @default(cuid())
-  title     String
-  content   String
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  String
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  publishedOn DateTime @default(now())
+  published   Boolean  @default(false)
+  author      User     @relation(fields: [authorId], references: [id])
+  authorId    String
 }

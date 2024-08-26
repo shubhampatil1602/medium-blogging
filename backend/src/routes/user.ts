@@ -80,9 +80,9 @@ userRouter.post('/signin', async (c) => {
       },
     });
 
-    if (!user) {
+    if (user?.email !== body.email || user?.password !== body.password) {
       c.status(403);
-      return c.json({ error: 'User not found.' });
+      return c.json({ error: 'Wrong credentials.' });
     }
 
     const token = await sign(
