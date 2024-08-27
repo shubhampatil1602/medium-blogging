@@ -37,7 +37,9 @@ blogRouter.post('/', authMiddleware, async (c) => {
         publishedOn: new Date(),
       },
     });
-    return c.json({ id: blog.id });
+    return c.json({
+      id: blog.id,
+    });
   } catch (error) {
     c.status(500);
     return c.json({ msg: 'Failed to create blog.' });
@@ -109,7 +111,7 @@ blogRouter.get('/bulk', async (c) => {
   const limitParam = c.req.query('limit');
   const pageParam = c.req.query('page');
 
-  const limit = limitParam ? parseInt(limitParam, 10) : 10; // Default to 10 items per page
+  const limit = limitParam ? parseInt(limitParam, 10) : 5; // Default to 10 items per page
   const page = pageParam ? parseInt(pageParam, 10) : 1; // Default to page 1
 
   // Calculate the number of records to skip
@@ -120,6 +122,19 @@ blogRouter.get('/bulk', async (c) => {
     const blogs = await prisma.blog.findMany({
       skip: skip, // Skip the calculated number of records
       take: limit, // Limit the number of records returned
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        published: true,
+        publishedOn: true,
+        author: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     // Optionally, fetch the total count of blogs for additional pagination info
@@ -152,6 +167,20 @@ blogRouter.get('/:id', async (c) => {
     const blog = await prisma.blog.findFirst({
       where: {
         id: blogId,
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        published: true,
+        publishedOn: true,
+        author: {
+          select: {
+            name: true,
+            email: true,
+            about: true,
+          },
+        },
       },
     });
     if (!blog) {
