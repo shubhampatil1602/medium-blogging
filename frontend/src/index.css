@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles for the markdown code block */
+table,
+th,
+td,
+thead,
+tbody,
+.markdown-preview code {
+  background-color: #f5f5f5; /* Light gray background */
+  color: #333; /* Dark text color */
+  padding: 4px;
+  border-radius: 4px;
+}
+
+/* Optional: Additional styling for code blocks */
+table,
+th,
+td,
+thead,
+tbody,
+.markdown-preview pre {
+  background-color: #f5f5f5; /* Light gray background */
+  color: #333; /* Dark text color */
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto; /* Allow horizontal scrolling for long lines */
+}
