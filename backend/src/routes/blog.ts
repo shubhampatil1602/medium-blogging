@@ -89,6 +89,19 @@ blogRouter.get('/my-blogs', authMiddleware, async (c) => {
       where: {
         authorId: c.get('userId'),
       },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        published: true,
+        publishedOn: true,
+        author: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     if (blogs.length === 0) {
@@ -179,6 +192,7 @@ blogRouter.get('/:id', async (c) => {
             name: true,
             email: true,
             about: true,
+            id: true,
           },
         },
       },
