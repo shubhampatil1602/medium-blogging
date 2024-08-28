@@ -9,6 +9,7 @@ import Shimmer from '../components/Shimmer';
 const Blogs = () => {
   const [blogs, setBlogs] = useState<BlogInterface[]>([]);
   const [myBlogs, setMyBlogs] = useState<BlogInterface[]>([]);
+  const [msg, setMsg] = useState('');
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -24,8 +25,10 @@ const Blogs = () => {
         },
       });
       const data = await response.json();
-      console.log(data);
-      console.log(response);
+      if (data.msg) {
+        setMsg(data.msg);
+        console.log(data);
+      }
       setMyBlogs(data);
     } catch (error) {
       console.error('Failed to fetch blogs:', error);
@@ -99,11 +102,9 @@ const Blogs = () => {
           <Shimmer />
           <Shimmer />
         </>
-      ) : myBlogs?.msg ? (
+      ) : msg ? (
         <Link to={'/write'}>
-          <div className='text-center mt-20 hover:underline'>
-            {myBlogs?.msg}
-          </div>
+          <div className='text-center mt-20 hover:underline'>{msg}</div>
         </Link>
       ) : (
         myBlogs?.map((blog) => (

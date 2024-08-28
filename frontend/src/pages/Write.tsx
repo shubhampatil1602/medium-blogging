@@ -13,7 +13,7 @@ const Write = () => {
   const [generate, setGenerate] = useState(false);
   const naviagte = useNavigate();
 
-  const sendBlog = async (e) => {
+  const sendBlog = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) {
       return;
@@ -94,7 +94,7 @@ const Write = () => {
         The AI-generated content will be rendered correctly with all formatting
         intact.
       </div>
-      <form>
+      <form onSubmit={sendBlog}>
         <InputField
           label='Title'
           placeholder='Add title'
@@ -134,7 +134,6 @@ const Write = () => {
         ></textarea>
 
         <button
-          onClick={sendBlog}
           className={`w-full bg-green-700 text-white text-sm rounded-lg p-2.5 mt-3 ${
             publishLoading && 'opacity-80'
           }`}

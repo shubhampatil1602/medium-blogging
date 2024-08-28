@@ -18,7 +18,14 @@ const Auth = ({ type }: AuthType) => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { setShowAuth } = useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error(
+      'Some Component must be used within an AuthContext.Provider'
+    );
+  }
+
+  const { setShowAuth } = context;
 
   const sendUserCredentials = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
