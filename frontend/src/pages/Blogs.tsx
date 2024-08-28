@@ -73,17 +73,19 @@ const Blogs = () => {
         >
           All Blogs
         </span>
-        <span
-          onClick={() => {
-            setBlogType('Your Blogs');
-            fetchMyBlogs();
-          }}
-          className={`cursor-pointer py-6 ${
-            blogType === 'Your Blogs' && 'border-black border-b'
-          }`}
-        >
-          Your Blogs
-        </span>
+        {localStorage.getItem('blogging-token') && (
+          <span
+            onClick={() => {
+              setBlogType('Your Blogs');
+              fetchMyBlogs();
+            }}
+            className={`cursor-pointer py-6 ${
+              blogType === 'Your Blogs' && 'border-black border-b'
+            }`}
+          >
+            Your Blogs
+          </span>
+        )}
       </div>
       {blogType === 'All Blogs' ? (
         blogs?.map((blog) => (
