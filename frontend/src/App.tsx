@@ -22,6 +22,7 @@ function App() {
             <Route path='/blog/:id' element={<Blog />} />
             <Route path='/write' element={<Write />} />
             <Route path='/' element={<Blogs />} />
+            <Route path='*' element={<Blogs />} />
           </Routes>
           <Footer />
         </BrowserRouter>
